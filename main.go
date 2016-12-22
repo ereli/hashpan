@@ -3,14 +3,23 @@ package main
 import (
 	"crypto/sha1"
 	"encoding/base64"
+	"encoding/csv"
 	"fmt"
+	"log"
+	"os"
 	"strconv"
 )
 
-///https://github.com/durango/go-credit-card/blob/master/creditcard_test.go
+const file = "data/ranges.csv"
+const panLength = 16
 
-//https://gist.github.com/FreedomCoder/2981812#file-luhn-go
-//https://github.com/durango/go-credit-card/blob/master/creditcard.go
+/*
+Sources:
+https://github.com/durango/go-credit-card/blob/master/creditcard_test.go
+https://gist.github.com/FreedomCoder/2981812#file-luhn-go
+https://github.com/durango/go-credit-card/blob/master/creditcard.go
+*/
+
 func Luhn(card string) bool {
 	var sum int
 	var alternate bool
@@ -53,6 +62,7 @@ func print(s string) {
 	fmt.Println(s)
 }
 func iterRange(rangeStart int, rangeEnd int) {
+	print("here")
 	for i := rangeStart; i <= rangeEnd; i++ {
 		c := strconv.Itoa(i)
 		res := Luhn(c)
@@ -63,6 +73,55 @@ func iterRange(rangeStart int, rangeEnd int) {
 	}
 }
 
+func endRange(input string) string {
+	return "ok"
+
+}
 func main() {
-	iterRange(5105105105105100, 5105105105105200)
+
+	file, err := os.Open(file)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	defer file.Close()
+
+	r := csv.NewReader(file)
+	recods, err := r.ReadAll()
+	if err != nil {
+		log.Fatalf("error reading all lines: %v", err)
+	}
+
+	start := make([]string, len(recods)-1)
+	end := make([]string, len(recods)-1)
+
+	for i, line := range recods {
+		if i == 0 {
+			// skip header line
+			continue
+		}
+		start[i-1] = line[0]
+		end[i-1] = line[1]
+	}
+
+	for i, _ := range start {
+		//fmt.Println(start[i], end[i])
+
+		startInt, err1 := strconv.Atoi(start[i])
+		if err1 == nil {
+			endInt, err := strconv.Atoi(end[i])
+			if err == nil {
+
+				digits := panLength - len(start[i])
+				//TODO conditional padding fuction
+				fmt.Println("going to iterate", startInt, endInt, digits)
+				iterRange(startInt, endInt)
+
+				//			fmt.Println(err, start[i])
+			}
+			//fmt.Println(end[i])
+		}
+
+	}
+
 }
