@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const file = "data/ranges.csv"
@@ -15,10 +16,22 @@ const panLength = 16
 
 /*
 Sources:
+https://github.com/DaddyOh/golang-samples/blob/master/pad.go
 https://github.com/durango/go-credit-card/blob/master/creditcard_test.go
 https://gist.github.com/FreedomCoder/2981812#file-luhn-go
 https://github.com/durango/go-credit-card/blob/master/creditcard.go
 */
+
+func rightPad2Len(s string, padStr string, overallLen int) string {
+	var padCountInt int
+	padCountInt = 1 + ((overallLen - len(padStr)) / len(padStr))
+	var retStr = s + strings.Repeat(padStr, padCountInt)
+	return retStr[:overallLen]
+}
+
+func rightPad(s string, padStr string, pLen int) string {
+	return s + strings.Repeat(padStr, pLen)
+}
 
 func Luhn(card string) bool {
 	var sum int
@@ -62,12 +75,12 @@ func print(s string) {
 	fmt.Println(s)
 }
 func iterRange(rangeStart int, rangeEnd int) {
-	print("here")
+
 	for i := rangeStart; i <= rangeEnd; i++ {
 		c := strconv.Itoa(i)
 		res := Luhn(c)
-		if res {
-			fmt.Println(i)
+		if res == true {
+			fmt.Println(hash(c))
 
 		}
 	}
@@ -105,21 +118,22 @@ func main() {
 	}
 
 	for i, _ := range start {
-		//fmt.Println(start[i], end[i])
 
 		startInt, err1 := strconv.Atoi(start[i])
 		if err1 == nil {
 			endInt, err := strconv.Atoi(end[i])
 			if err == nil {
-
 				digits := panLength - len(start[i])
-				//TODO conditional padding fuction
-				fmt.Println("going to iterate", startInt, endInt, digits)
-				iterRange(startInt, endInt)
 
-				//			fmt.Println(err, start[i])
+				// padding
+				finalStart := rightPad(start[i], "0", digits)
+				finalEnd := rightPad(end[i], "9", digits)
+				finalStartInt, _ := strconv.Atoi(finalStart)
+				finalEndInt, _ := strconv.Atoi(finalEnd)
+				fmt.Println("going to iterate", startInt, endInt, digits, finalStart, finalEnd, finalStartInt, finalEndInt)
+				iterRange(finalStartInt, finalEndInt)
+
 			}
-			//fmt.Println(end[i])
 		}
 
 	}
