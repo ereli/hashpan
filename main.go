@@ -22,12 +22,14 @@ https://gist.github.com/FreedomCoder/2981812#file-luhn-go
 https://github.com/durango/go-credit-card/blob/master/creditcard.go
 */
 
-func rightPad2Len(s string, padStr string, overallLen int) string {
-	var padCountInt int
-	padCountInt = 1 + ((overallLen - len(padStr)) / len(padStr))
-	var retStr = s + strings.Repeat(padStr, padCountInt)
-	return retStr[:overallLen]
-}
+/*TODO:
+GPU support
+persisentence
+rainbow tablw lookups
+go routines + channels for concurrnecy
+refactoring functions
+tests.
+*/
 
 func rightPad(s string, padStr string, pLen int) string {
 	return s + strings.Repeat(padStr, pLen)
@@ -131,6 +133,7 @@ func main() {
 				finalStartInt, _ := strconv.Atoi(finalStart)
 				finalEndInt, _ := strconv.Atoi(finalEnd)
 				fmt.Println("going to iterate", startInt, endInt, digits, finalStart, finalEnd, finalStartInt, finalEndInt)
+
 				iterRange(finalStartInt, finalEndInt)
 
 			}
